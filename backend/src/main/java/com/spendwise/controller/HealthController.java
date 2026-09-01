@@ -1,5 +1,6 @@
 package com.spendwise.controller;
 
+import com.spendwise.dto.HealthResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
 
     @GetMapping("/api/v1/health")
-    public String health() {
-        return "UP";
+    public HealthResponse health() {
+        return new HealthResponse("UP");
     }
 }
