@@ -1,0 +1,19 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: spendwise-postgres
+
+    environment:
+      POSTGRES_DB: spendwise
+      POSTGRES_USER: spendwise
+      POSTGRES_PASSWORD: spendwise_dev_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
