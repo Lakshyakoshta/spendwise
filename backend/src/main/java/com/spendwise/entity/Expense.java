@@ -1,34 +1,39 @@
 package com.spendwise.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.spendwise.user.entity.User;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-
 @Entity
+@Table(name = "expense")
 public class Expense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
     private ExpenseCategory category;
 
+    @Column(length = 500)
     private String description;
 
+    @Column(name = "expense_date", nullable = false)
     private LocalDate expenseDate;
 
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     protected Expense() {
     }
@@ -38,13 +43,15 @@ public class Expense {
             ExpenseCategory category,
             String description,
             LocalDate expenseDate,
-            Instant createdAt
-    ) {
+            Instant createdAt,
+            User user) {
+
         this.amount = amount;
         this.category = category;
         this.description = description;
         this.expenseDate = expenseDate;
         this.createdAt = createdAt;
+        this.user = user;
     }
 
     public Long getId() {
@@ -71,19 +78,19 @@ public class Expense {
         return createdAt;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public User getUser() {
+        return user;
+    }
+
+    public void update(
+            BigDecimal amount,
+            ExpenseCategory category,
+            String description,
+            LocalDate expenseDate) {
+
         this.amount = amount;
-    }
-    
-    public void setCategory(ExpenseCategory category) {
         this.category = category;
-    }
-    
-    public void setDescription(String description) {
         this.description = description;
-    }
-    
-    public void setExpenseDate(LocalDate expenseDate) {
         this.expenseDate = expenseDate;
     }
 }
