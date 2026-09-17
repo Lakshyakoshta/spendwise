@@ -2,6 +2,8 @@ package com.spendwise.repository;
 
 import com.spendwise.entity.Expense;
 import com.spendwise.entity.ExpenseCategory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +18,46 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findAllByUserId(Long userId);
 
     Optional<Expense> findByIdAndUserId(Long id, Long userId);
+
+    Page<Expense> findAllByUserId(
+            Long userId,
+            Pageable pageable
+    );
+
+    @Query("""
+            SELECT e
+            FROM Expense e
+            WHERE e.user.id = :userId
+              AND (:category IS NULL OR e.category = :category)
+              AND (:dateFrom IS NULL OR e.expenseDate >= :dateFrom)
+              AND (:dateTo IS NULL OR e.expenseDate <= :dateTo)
+              AND (
+                    :search IS NULL
+                    OR LOWER(e.description) LIKE LOWER(CONCAT('%', :search, '%'))
+              )
+            """)
+    Page<Expense> searchExpenses(
+            @Param("userId") Long userId,
+            @Param("category") ExpenseCategory category,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
+            @Param("search") String search,
+            Pageable pageable
+    );
+
+    @Query("""
+            SELECT COALESCE(SUM(e.amount), 0)
+            FROM Expense e
+            WHERE e.user.id = :userId
+            AND e.category = :category
+            AND e.expenseDate >= :startDate
+            AND e.expenseDate < :endDate
+            """)
+    BigDecimal sumAmountByUserIdAndDateRangeAndCategory(
+            @Param("userId") Long userId,
+            @Param("category") ExpenseCategory category,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
     @Query("""
             SELECT COALESCE(SUM(e.amount), 0)
