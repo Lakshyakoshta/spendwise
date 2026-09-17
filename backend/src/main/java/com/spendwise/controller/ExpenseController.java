@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-import com.spendwise.dto.UpdateExpenseRequest;
 import jakarta.validation.Valid;
 
 @RestController
