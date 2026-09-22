@@ -16,9 +16,32 @@ jobs:
     name: Backend Tests
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: spendwise
+          POSTGRES_USER: spendwise
+          POSTGRES_PASSWORD: spendwise_test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U spendwise -d spendwise"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
     defaults:
       run:
         working-directory: backend
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: spendwise
+      DB_USERNAME: spendwise
+      DB_PASSWORD: spendwise_test_password
+      JWT_SECRET: spendwise-test-jwt-secret-key-2026-very-secure
 
     steps:
       - name: Checkout repository
